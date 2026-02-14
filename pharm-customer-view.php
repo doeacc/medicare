@@ -1,70 +1,14 @@
-<?php 
+<?php
+include "config.php";
+session_start();
 
-	if(isset($_POST['search'])) {
-		
-		$search=$_POST['valuetosearch'];
-		$query="SELECT c_id, c_fname,c_lname,c_phno FROM `customer` 
-			WHERE CONCAT(c_id, c_fname,c_lname,c_phno) LIKE '%".$search."%';";
-		$search_result=filtertable($query);
-	}
-	
-	else {
-			$query="SELECT c_id, c_fname,c_lname,c_phno FROM `customer`";
-			$search_result=filtertable($query);
-	}
-	
-	function filtertable($query)
-	{	$conn = mysqli_connect("localhost", "root", "", "pharmacy");
-		$filter_result=mysqli_query($conn,$query);
-		return $filter_result;
-	}
-?>
+$search_result = null;
+$search = '';
+if (isset($_POST['search'])) {
+	$search = mysqli_real_escape_string($conn, $_POST['valuetosearch'] ?? '');
+	$query = "SELECT c_id, c_fname, c_lname, c_phno FROM customer WHERE CONCAT(c_id, c_fname, c_lname, c_phno) LIKE '%" . $search . "%'";
+	$search_result = $conn->query($query);
 
-<!DOCTYPE html>
-<html>
-
-<head>
-<link rel="stylesheet" type="text/css" href="nav2.css">
-<link rel="stylesheet" type="text/css" href="table1.css">
-<link rel="stylesheet" type="text/css" href="form2.css">
-<title>
-Customers
-</title>
-</head>
-
-<body>
-
-		<div class="sidenav">
-			<h2 style="font-family:Arial; color:white; text-align:center;"> Medical Store Management System </h2>
-			<p style="margin-top:-20px;color:white;line-height:1;font-size:12px;text-align:center">Developed by, Dharmendra Yadav!</p>
-			<a href="pharmmainpage.php">Dashboard</a>
-			
-			<a href="pharm-inventory.php">View Inventory</a>
-			<a href="pharm-pos1.php">Add New Sale</a>
-			<button class="dropdown-btn">Customers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="pharm-customer.php">Add New Customer</a>
-				<a href="pharm-customer-view.php">View Customers</a>
-			</div>
-	</div>
-
-	<?php
-	
-		include "config.php";
-		session_start();
-		
-		$sql="SELECT E_FNAME from EMPLOYEE WHERE E_ID='$_SESSION[user]'";
-		$result=$conn->query($sql);
-		$row=$result->fetch_row();
-		
-		$ename=$row[0];
-		
-	?>
-
-	<div class="topnav">
-		<a href="logout1.php">Logout(signed in as <?php echo $ename; ?>)</a>
 	</div>
 	
 	<center>
@@ -116,18 +60,74 @@ Customers
 		var dropdown = document.getElementsByClassName("dropdown-btn");
 		var i;
 
-			for (i = 0; i < dropdown.length; i++) {
-			  dropdown[i].addEventListener("click", function() {
-			  this.classList.toggle("active");
-			  var dropdownContent = this.nextElementSibling;
-			  if (dropdownContent.style.display === "block") {
-			  dropdownContent.style.display = "none";
-			  } else {
-			  dropdownContent.style.display = "block";
-			  }
-			  });
-			}
-			
-</script>
+			<!doctype html>
+			<html lang="en">
+				<head>
+					<meta charset="utf-8">
+					<meta name="viewport" content="width=device-width, initial-scale=1">
+					<title>Customers (Pharmacist)</title>
+					<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+				</head>
+				<body>
+					<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+						<div class="container-fluid">
+							<a class="navbar-brand" href="pharmmainpage.php">Pharmacist</a>
+							<div class="d-flex">
+								<?php
+									$ename = '';
+									if (isset($_SESSION['user'])) {
+										$r = $conn->query("SELECT E_FNAME FROM EMPLOYEE WHERE E_ID='" . mysqli_real_escape_string($conn, $_SESSION['user']) . "'");
+										if ($r) { $rr = $r->fetch_row(); $ename = $rr[0] ?? ''; }
+									}
+								?>
+								<a class="btn btn-outline-light" href="logout1.php">Logout<?php if($ename) echo ' ('.htmlspecialchars($ename).')'; ?></a>
+							</div>
+						</div>
+					</nav>
 
-</html>
+					<div class="container py-4">
+						<h2 class="mb-3">Customer List</h2>
+
+						<form method="post" class="row g-2 mb-3">
+							<div class="col-md-8">
+								<input type="text" name="valuetosearch" value="<?php echo htmlspecialchars($search); ?>" class="form-control" placeholder="Enter any value to search">
+							</div>
+							<div class="col-md-4 d-flex">
+								<button type="submit" name="search" class="btn btn-primary me-2">Search</button>
+								<a href="pharm-customer.php" class="btn btn-outline-secondary">Add New Customer</a>
+							</div>
+						</form>
+
+						<div class="table-responsive">
+							<table class="table table-striped table-bordered">
+								<thead class="table-dark">
+									<tr>
+										<th>Customer ID</th>
+										<th>First Name</th>
+										<th>Last Name</th>
+										<th>Phone Number</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php if ($search_result && $search_result->num_rows > 0): ?>
+										<?php while ($row = $search_result->fetch_assoc()): ?>
+											<tr>
+												<td><?php echo htmlspecialchars($row['c_id']); ?></td>
+												<td><?php echo htmlspecialchars($row['c_fname']); ?></td>
+												<td><?php echo htmlspecialchars($row['c_lname']); ?></td>
+												<td><?php echo htmlspecialchars($row['c_phno']); ?></td>
+											</tr>
+										<?php endwhile; ?>
+									<?php else: ?>
+										<tr><td colspan="4" class="text-center">No customers found.</td></tr>
+									<?php endif; ?>
+								</tbody>
+							</table>
+						</div>
+
+					</div>
+
+					<?php $conn->close(); ?>
+					<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+				</body>
+			</html>

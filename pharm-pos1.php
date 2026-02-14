@@ -1,57 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="nav2.css">
-<link rel="stylesheet" type="text/css" href="form3.css">
-<link rel="stylesheet" type="text/css" href="table2.css">
-<title>
-New Sales
-</title>
-</head>
 
-<body>
-
-		<div class="sidenav">
-			<h2 style="font-family:Arial; color:white; text-align:center;"> Medical Store Management System </h2>
-			<p style="margin-top:-20px;color:white;line-height:1;font-size:12px;text-align:center">Developed by, Dharmendra Yadav!</p>
-			<a href="pharmmainpage.php">Dashboard</a>
-			
-			<a href="pharm-inventory.php">View Inventory</a>
-			<a href="pharm-pos1.php">Add New Sale</a>
-			<button class="dropdown-btn">Customers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="pharm-customer.php">Add New Customer</a>
-				<a href="pharm-customer-view.php">View Customers</a>
-			</div>
-	</div>
-
-	<?php
-		include "config.php";
-		session_start();
-	
-		$sql="SELECT E_FNAME from EMPLOYEE WHERE E_ID='$_SESSION[user]'";
-		$result=$conn->query($sql);
-		$row=$result->fetch_row();
-		
-		$ename=$row[0];
-	?>
-
-	<div class="topnav">
-		<a href="logout1.php">Logout(signed in as <?php echo $ename; ?>)</a>
-	</div>
-	
-	<center>
-	<div class="head">
-	<h2> POINT OF SALE</h2>
-	</div>
-	</center>
-	
-
-	<form action="<?=$_SERVER['PHP_SELF']?>" method="post">
 		<center>
 		
 		<select id="cid" name="cid">
@@ -146,75 +96,190 @@ New Sales
 					<div class="column">
 					
 					<label for="mcat">Category:</label>
-					<input type="text" name="mcat" value="<?php echo $row4[3]; ?>" readonly><br><br>
-					
-					<label for="mloc">Location:</label>
-					<input type="text" name="mloc" value="<?php echo $row4[5]; ?>" readonly><br><br>
-					
-					</div>
-					<div class="column">
-					
-					<label for="mqty">Quantity Available:</label>
-					<input type="number" name="mqty" value="<?php echo $row4[2]; ?>" readonly><br><br>
-					
-					<label for="mprice">Price of One Unit:</label>
-					<input type="number" name="mprice" value="<?php echo $row4[4]; ?>" readonly><br><br>
-					
-					</div>
-					<label for="mcqty">Quantity Required:</label>
-					<input type="number" name="mcqty">
-					&nbsp;&nbsp;&nbsp;
-					<input type="submit" name="add" value="Add Medicine">&nbsp;&nbsp;&nbsp;
-			
-	<?php
-		
-		if(isset($_POST['add'])) {
-			
-				$qry5="select sale_id from sales ORDER BY sale_id DESC LIMIT 1";
-				$result5=$conn->query($qry5); 
-				$row5=$result5->fetch_row();
-				$sid=$row5[0];
-				echo mysqli_error($conn);
-		
-				$mid=$_POST['medid'];
-				$aqty=$_POST['mqty'];
-				$qty=$_POST['mcqty'];
-				
-				if($qty>$aqty||$qty==0)
-				{echo "QUANTITY INVALID!";}
-				else {
-				$price=$_POST['mprice']*$qty;
-				$qry6="INSERT INTO sales_items(`sale_id`,`med_id`,`sale_qty`,`tot_price`) VALUES($sid,$mid,$qty,$price)";
-				$result6 = mysqli_query($conn,$qry6);
-				echo mysqli_error($conn);
-				
-				echo "<br><br> <center>";
-				echo "<a class='button1 view-btn' href=pharm-pos2.php?sid=".$sid.">View Order</a>";
-				echo "</center>";
-				}
-		}	
-	?>
-		
-		</form>
-	</div>
-	
-</body>
+					<?php
+					include "config.php";
+					session_start();
 
-<script>
-		var dropdown = document.getElementsByClassName("dropdown-btn");
-		var i;
+					$alert = '';
+					$order_link = '';
+					$selected_med = null;
 
-			for (i = 0; i < dropdown.length; i++) {
-			  dropdown[i].addEventListener("click", function() {
-			  this.classList.toggle("active");
-			  var dropdownContent = this.nextElementSibling;
-			  if (dropdownContent.style.display === "block") {
-			  dropdownContent.style.display = "none";
-			  } else {
-			  dropdownContent.style.display = "block";
-			  }
-			  });
-			}		
-</script>
+					// Fetch current employee name for header
+					$ename = '';
+					if (isset($_SESSION['user'])) {
+							$rs = $conn->query("SELECT E_FNAME FROM EMPLOYEE WHERE E_ID='" . mysqli_real_escape_string($conn, $_SESSION['user']) . "'");
+							if ($rs) { $r = $rs->fetch_row(); $ename = $r[0] ?? ''; }
+					}
 
-</html>
+					// Handle adding customer (start a sale)
+					if (isset($_POST['custadd'])) {
+							$cid = mysqli_real_escape_string($conn, $_POST['cid'] ?? '');
+							if ($cid === '' || $cid === '0') {
+									$alert = '<div class="alert alert-danger">Please select a valid Customer ID.</div>';
+							} else {
+									$qry = "INSERT INTO sales(c_id,e_id) VALUES ('" . $cid . "','" . mysqli_real_escape_string($conn, $_SESSION['user']) . "')";
+									if (!$conn->query($qry)) {
+											$alert = '<div class="alert alert-danger">Invalid! Enter valid Customer ID to record Sales.</div>';
+									} else {
+											$alert = '<div class="alert alert-success">Sale started for customer ' . htmlspecialchars($cid) . '.</div>';
+									}
+							}
+					}
+
+					// Handle medicine search
+					if (isset($_POST['search']) && !empty($_POST['med'])) {
+							$med = mysqli_real_escape_string($conn, $_POST['med']);
+							$res = $conn->query("SELECT * FROM meds WHERE med_name='" . $med . "'");
+							if ($res && $res->num_rows > 0) {
+									$selected_med = $res->fetch_assoc();
+							} else {
+									$alert = '<div class="alert alert-warning">Medicine not found.</div>';
+							}
+					}
+
+					// Handle adding medicine to current sale
+					if (isset($_POST['add'])) {
+							// get latest sale id
+							$res = $conn->query("SELECT sale_id FROM sales ORDER BY sale_id DESC LIMIT 1");
+							$sid = ($res && $res->num_rows>0) ? $res->fetch_row()[0] : null;
+							$mid = mysqli_real_escape_string($conn, $_POST['medid'] ?? '');
+							$aqty = intval($_POST['mqty'] ?? 0);
+							$qty = intval($_POST['mcqty'] ?? 0);
+							$mprice = floatval($_POST['mprice'] ?? 0);
+
+							if (!$sid) {
+									$alert = '<div class="alert alert-danger">No active sale. Add a customer first.</div>';
+							} elseif ($qty <= 0 || $qty > $aqty) {
+									$alert = '<div class="alert alert-danger">Quantity invalid or exceeds available stock.</div>';
+							} else {
+									$price = $mprice * $qty;
+									$ins = "INSERT INTO sales_items(`sale_id`,`med_id`,`sale_qty`,`tot_price`) VALUES($sid,$mid,$qty,$price)";
+									if ($conn->query($ins)) {
+											$order_link = '<a class="btn btn-success" href="pharm-pos2.php?sid=' . urlencode($sid) . '">View Order</a>';
+									} else {
+											$alert = '<div class="alert alert-danger">Error adding item to sale.</div>';
+									}
+							}
+					}
+
+					// Fetch customers and medicines for selects
+					$customers = [];
+					$rs = $conn->query("SELECT c_id FROM customer");
+					if ($rs) { while ($r = $rs->fetch_assoc()) $customers[] = $r['c_id']; }
+
+					$medicines = [];
+					$rs2 = $conn->query("SELECT med_name FROM meds");
+					if ($rs2) { while ($r = $rs2->fetch_assoc()) $medicines[] = $r['med_name']; }
+
+					?>
+
+					<!doctype html>
+					<html lang="en">
+						<head>
+							<meta charset="utf-8">
+							<meta name="viewport" content="width=device-width, initial-scale=1">
+							<title>Point of Sale (Pharmacist)</title>
+							<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+						</head>
+						<body>
+							<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+								<div class="container-fluid">
+									<a class="navbar-brand" href="pharmmainpage.php">Pharmacist POS</a>
+									<div class="d-flex">
+										<a class="btn btn-outline-light" href="logout1.php">Logout<?php if($ename) echo ' ('.htmlspecialchars($ename).')'; ?></a>
+									</div>
+								</div>
+							</nav>
+
+							<div class="container py-4">
+								<h2 class="mb-3">Point of Sale</h2>
+								<?php echo $alert; ?>
+
+								<div class="row g-4">
+									<div class="col-md-6">
+										<div class="card">
+											<div class="card-body">
+												<h5 class="card-title">Start Sale</h5>
+												<form method="post" class="row g-2 align-items-end">
+													<div class="col-8">
+														<label class="form-label">Customer ID</label>
+														<select name="cid" class="form-select">
+															<option value="0">Select Customer ID</option>
+															<?php foreach ($customers as $c): ?>
+																<option value="<?php echo htmlspecialchars($c); ?>"><?php echo htmlspecialchars($c); ?></option>
+															<?php endforeach; ?>
+														</select>
+													</div>
+													<div class="col-4">
+														<button type="submit" name="custadd" class="btn btn-primary w-100">Add</button>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<div class="card">
+											<div class="card-body">
+												<h5 class="card-title">Find Medicine</h5>
+												<form method="post" class="d-flex gap-2">
+													<select name="med" class="form-select">
+														<option value="">Select Medicine</option>
+														<?php foreach ($medicines as $m): ?>
+															<option value="<?php echo htmlspecialchars($m); ?>"><?php echo htmlspecialchars($m); ?></option>
+														<?php endforeach; ?>
+													</select>
+													<button type="submit" name="search" class="btn btn-secondary">Search</button>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<?php if ($selected_med): ?>
+								<div class="card mt-4">
+									<div class="card-body">
+										<h5 class="card-title">Medicine Details</h5>
+										<form method="post" class="row g-3">
+											<div class="col-md-3">
+												<label class="form-label">Medicine ID</label>
+												<input class="form-control" name="medid" value="<?php echo htmlspecialchars($selected_med['med_id'] ?? $selected_med['med_id']); ?>" readonly>
+											</div>
+											<div class="col-md-3">
+												<label class="form-label">Name</label>
+												<input class="form-control" name="mdname" value="<?php echo htmlspecialchars($selected_med['med_name'] ?? ''); ?>" readonly>
+											</div>
+											<div class="col-md-2">
+												<label class="form-label">Category</label>
+												<input class="form-control" name="mcat" value="<?php echo htmlspecialchars($selected_med['category'] ?? $selected_med['cat'] ?? $selected_med['med_type'] ?? ''); ?>" readonly>
+											</div>
+											<div class="col-md-2">
+												<label class="form-label">Location</label>
+												<input class="form-control" name="mloc" value="<?php echo htmlspecialchars($selected_med['location'] ?? $selected_med['loc'] ?? ''); ?>" readonly>
+											</div>
+											<div class="col-md-2">
+												<label class="form-label">Available Qty</label>
+												<input class="form-control" name="mqty" value="<?php echo htmlspecialchars($selected_med['qty'] ?? $selected_med['med_qty'] ?? $selected_med['QTY'] ?? ''); ?>" readonly>
+											</div>
+											<div class="col-md-3">
+												<label class="form-label">Unit Price</label>
+												<input class="form-control" name="mprice" value="<?php echo htmlspecialchars($selected_med['price'] ?? $selected_med['selling_price'] ?? $selected_med['sp'] ?? ''); ?>" readonly>
+											</div>
+											<div class="col-md-3">
+												<label class="form-label">Quantity Required</label>
+												<input class="form-control" type="number" name="mcqty" min="1">
+											</div>
+											<div class="col-md-6 d-flex align-items-end">
+												<button type="submit" name="add" class="btn btn-primary me-2">Add Medicine</button>
+												<?php echo $order_link; ?>
+											</div>
+										</form>
+									</div>
+								</div>
+								<?php endif; ?>
+
+							</div>
+
+							<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+						</body>
+					</html>

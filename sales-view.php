@@ -1,128 +1,77 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="nav2.css">
-<link rel="stylesheet" type="text/css" href="table1.css">
-<title>
-Sales Invoice
-</title>
-</head>
-
-<body>
-
-		<div class="sidenav">
-			<h2 style="font-family:Arial; color:white; text-align:center;"> Medical Store Management System </h2>
-			<p style="margin-top:-20px;color:white;line-height:1;font-size:12px;text-align:center">Developed by, Dharmendra Yadav!</p>
-			<a href="adminmainpage.php">Dashboard</a>
-			<button class="dropdown-btn">Inventory
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="inventory-add.php">Add New Medicine</a>
-				<a href="inventory-view.php">Manage Inventory</a>
+<?php
+include "config.php";
+?>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Sales Invoice</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="adminmainpage.php">Medical Store</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navMenu">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+						<li class="nav-item"><a class="nav-link" href="inventory-view.php">Inventory</a></li>
+						<li class="nav-item"><a class="nav-link" href="supplier-view.php">Suppliers</a></li>
+						<li class="nav-item"><a class="nav-link" href="purchase-view.php">Purchases</a></li>
+						<li class="nav-item"><a class="nav-link" href="employee-view.php">Employees</a></li>
+						<li class="nav-item"><a class="nav-link" href="customer-view.php">Customers</a></li>
+					</ul>
+					<div class="d-flex">
+						<a class="btn btn-outline-light" href="logout.php">Logout</a>
+					</div>
+				</div>
 			</div>
-			<button class="dropdown-btn">Suppliers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="supplier-add.php">Add New Supplier</a>
-				<a href="supplier-view.php">Manage Suppliers</a>
-			</div>
-			<button class="dropdown-btn">Stock Purchase
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="purchase-add.php">Add New Purchase</a>
-				<a href="purchase-view.php">Manage Purchases</a>
-			</div>
-			<button class="dropdown-btn">Employees
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="employee-add.php">Add New Employee</a>
-				<a href="employee-view.php">Manage Employees</a>
-			</div>
-			<button class="dropdown-btn">Customers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="customer-add.php">Add New Customer</a>
-				<a href="customer-view.php">Manage Customers</a>
-			</div>
-			<a href="sales-view.php">View Sales Invoice Details</a>
-			<a href="salesitems-view.php">View Sold Products Details</a>
-			<a href="pos1.php">Add New Sale</a>
-			<button class="dropdown-btn">Reports
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="stockreport.php">Medicines - Low Stock</a>
-				<a href="expiryreport.php">Medicines - Soon to Expire</a>
-				<a href="salesreport.php">Transactions Reports</a>
-			</div>
-	</div>
+		</nav>
 
-	<div class="topnav">
-		<a href="logout.php">Logout</a>
-	</div>
-	
-	<center>
-	<div class="head">
-	<h2> SALES INVOICE DETAILS</h2>
-	</div>
-	</center>
-	
-	<table align="right" id="table1" style="margin-right:100px;">
-		<tr>
-			<th>Sale ID</th>
-			<th>Customer ID</th>
-			<th>Date and Time </th>
-			<th>Sale Amount</th>
-			<th>Employee ID</th>
-		</tr>
-		
-	<?php
-	include "config.php";
-	
-		$sql = "SELECT sale_id, c_id,s_date,s_time,total_amt,e_id FROM sales";
-		$result = $conn->query($sql);
-		if ($result->num_rows > 0) {
-		
-		while($row = $result->fetch_assoc()) {
-			
-			
-		echo "<tr>";
-			echo "<td>" . $row["sale_id"]. "</td>";
-			echo "<td>" . $row["c_id"] . "</td>";
-			echo "<td>" . $row["s_date"]."&nbsp;&nbsp;".$row["s_time"]."</td>";
-			echo "<td>" . $row["total_amt"]. "</td>";
-			echo "<td>" . $row["e_id"]. "</td>";
-		echo "</tr>";
-		}
-	echo "</table>";
-	} 
-	$conn->close();
-	?>
-	
-</body>
+		<div class="container py-4">
+			<div class="d-flex justify-content-between align-items-center mb-3">
+				<h2 class="mb-0">Sales Invoice Details</h2>
+				<a class="btn btn-success" href="pos1.php">Add New Sale</a>
+			</div>
 
-<script>
-		var dropdown = document.getElementsByClassName("dropdown-btn");
-		var i;
+			<div class="table-responsive">
+				<table class="table table-striped table-bordered align-middle">
+					<thead class="table-light">
+						<tr>
+							<th>Sale ID</th>
+							<th>Customer ID</th>
+							<th>Date and Time</th>
+							<th>Sale Amount</th>
+							<th>Employee ID</th>
+						</tr>
+					</thead>
+					<tbody>
+					<?php
+					$sql = "SELECT sale_id, c_id, s_date, s_time, total_amt, e_id FROM sales";
+					$result = $conn->query($sql);
+					if ($result && $result->num_rows > 0) {
+						while ($row = $result->fetch_assoc()) {
+							echo '<tr>';
+							echo '<td>' . htmlspecialchars($row['sale_id']) . '</td>';
+							echo '<td>' . htmlspecialchars($row['c_id']) . '</td>';
+							echo '<td>' . htmlspecialchars($row['s_date']) . ' ' . htmlspecialchars($row['s_time']) . '</td>';
+							echo '<td>' . htmlspecialchars($row['total_amt']) . '</td>';
+							echo '<td>' . htmlspecialchars($row['e_id']) . '</td>';
+							echo '</tr>';
+						}
+					} else {
+						echo '<tr><td colspan="5" class="text-center">No sales found.</td></tr>';
+					}
+					$conn->close();
+					?>
+					</tbody>
+				</table>
+			</div>
+		</div>
 
-			for (i = 0; i < dropdown.length; i++) {
-			  dropdown[i].addEventListener("click", function() {
-			  this.classList.toggle("active");
-			  var dropdownContent = this.nextElementSibling;
-			  if (dropdownContent.style.display === "block") {
-			  dropdownContent.style.display = "none";
-			  } else {
-			  dropdownContent.style.display = "block";
-			  }
-			  });
-			}		
-</script>
-
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
 </html>

@@ -2,95 +2,61 @@
 <html>
 
 <head>
-<link rel="stylesheet" type="text/css" href="nav2.css">
-<title>
-Admin Dashboard
-</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<title>Admin Dashboard</title>
 </head>
 
 <body>
 
-	<div class="sidenav">
-			<h2 style="font-family:Arial; color:white; text-align:center;"> Medical Store Management System </h2>
-			<p style="margin-top:-20px;color:white;line-height:1;font-size:12px;text-align:center">Developed by, Dharmendra Yadav!</p>
-			<a href="adminmainpage.php">Dashboard</a>
-			<button class="dropdown-btn">Inventory
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="inventory-add.php">Add New Medicine</a>
-				<a href="inventory-view.php">Manage Inventory</a>
-			</div>
-			<button class="dropdown-btn">Suppliers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="supplier-add.php">Add New Supplier</a>
-				<a href="supplier-view.php">Manage Suppliers</a>
-			</div>
-			<button class="dropdown-btn">Stock Purchase
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="purchase-add.php">Add New Purchase</a>
-				<a href="purchase-view.php">Manage Purchases</a>
-			</div>
-			<button class="dropdown-btn">Employees
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="employee-add.php">Add New Employee</a>
-				<a href="employee-view.php">Manage Employees</a>
-			</div>
-			<button class="dropdown-btn">Customers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="customer-add.php">Add New Customer</a>
-				<a href="customer-view.php">Manage Customers</a>
-			</div>
-			<a href="sales-view.php">View Sales Invoice Details</a>
-			<a href="salesitems-view.php">View Sold Products Details</a>
-			<a href="pos1.php">Add New Sale</a>
-			<button class="dropdown-btn">Reports
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="stockreport.php">Medicines - Low Stock</a>
-				<a href="expiryreport.php">Medicines - Soon to Expire</a>
-				<a href="salesreport.php">Transactions Reports</a>
-			</div>
-	</div>
 
-	<div class="topnav">
-		<a href="logout.php">Logout(Logged in as Admin)</a>
+
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="#">Medical Store - Admin</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsAdmin" aria-controls="navbarsAdmin" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarsAdmin">
+			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+				<li class="nav-item"><a class="nav-link" href="adminmainpage.php">Dashboard</a></li>
+				<li class="nav-item"><a class="nav-link" href="inventory-view.php">Inventory</a></li>
+				<li class="nav-item"><a class="nav-link" href="employee-view.php">Employees</a></li>
+				<li class="nav-item"><a class="nav-link" href="salesreport.php">Reports</a></li>
+			</ul>
+			<div class="d-flex">
+				<a class="btn btn-outline-secondary" href="logout.php">Logout</a>
+			</div>
+		</div>
 	</div>
-	
-	<center>
-	<div class="head">
-	<h2> ADMIN DASHBOARD </h2>
+</nav>
+
+<div class="container py-4">
+	<h2 class="mb-4 text-center">Admin Dashboard</h2>
+	<div class="row g-4 justify-content-center">
+		<div class="col-6 col-md-3 text-center">
+			<a href="pos1.php" title="Add New Sale"><img src="carticon1.png" class="img-fluid rounded border" alt="Add New Sale"></a>
+			<div class="mt-2">Add New Sale</div>
+		</div>
+		<div class="col-6 col-md-3 text-center">
+			<a href="inventory-view.php" title="View Inventory"><img src="inventory.png" class="img-fluid rounded border" alt="Inventory"></a>
+			<div class="mt-2">Inventory</div>
+		</div>
+		<div class="col-6 col-md-3 text-center">
+			<a href="employee-view.php" title="View Employees"><img src="emp.png" class="img-fluid rounded border" alt="Employees"></a>
+			<div class="mt-2">Employees</div>
+		</div>
+		<div class="col-6 col-md-3 text-center">
+			<a href="salesreport.php" title="View Transactions"><img src="moneyicon.png" class="img-fluid rounded border" alt="Transactions"></a>
+			<div class="mt-2">Transactions</div>
+		</div>
+		<div class="col-6 col-md-3 text-center">
+			<a href="stockreport.php" title="Low Stock Alert"><img src="alert.png" class="img-fluid rounded border" alt="Low Stock"></a>
+			<div class="mt-2">Low Stock</div>
+		</div>
 	</div>
-	</center>
-	
-	<a href="pos1.php" title="Add New Sale">
-	<img src="carticon1.png" style="padding:8px;margin-left:450px;margin-top:40px;width:200px;height:200px;border:2px solid black;" alt="Add New Sale">
-	</a>
-	
-	<a href="inventory-view.php" title="View Inventory">
-	<img src="inventory.png" style="padding:8px;margin-left:100px;margin-top:40px;width:200px;height:200px;border:2px solid black;" alt="Inventory">
-	</a>
-	
-	<a href="employee-view.php" title="View Employees">
-	<img src="emp.png" style="padding:8px;margin-left:100px;margin-top:40px;width:200px;height:200px;border:2px solid black;" alt="Employees List">
-	</a>
-	<br>
-	<a href="salesreport.php" title="View Transactions">
-	<img src="moneyicon.png" style="padding:8px;margin-left:550px;margin-top:40px;width:200px;height:200px;border:2px solid black;" alt="Transactions List">
-	</a>
-	
-	<a href="stockreport.php" title="Low Stock Alert">
-	<img src="alert.png" style="padding:8px;margin-left:100px;margin-top:40px;width:200px;height:200px;border:2px solid black;" alt="Low Stock Report">
-	</a>
+</div>
 	
 	
 </body>

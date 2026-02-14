@@ -1,219 +1,169 @@
-<!DOCTYPE html>
-<html>
+<?php
+include "config.php";
+?>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Transaction Reports</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="adminmainpage.php">Medical Store</a>
+				<div class="d-flex">
+					<a class="btn btn-outline-light" href="logout.php">Logout</a>
+				</div>
+			</div>
+		</nav>
 
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="nav2.css">
-<link rel="stylesheet" type="text/css" href="table1.css">
-<link rel="stylesheet" type="text/css" href="form3.css">
-<title>
-Reports
-</title>
-<style>
-body {font-family:Arial;}
-</style>
-</head>
+		<div class="container py-4">
+			<h2 class="mb-3">Transaction Reports</h2>
 
-<body>
+			<form method="post" class="row g-3 mb-4">
+				<div class="col-md-4">
+					<label class="form-label">Start Date</label>
+					<input class="form-control" type="date" name="start" required>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">End Date</label>
+					<input class="form-control" type="date" name="end" required>
+				</div>
+				<div class="col-md-4 align-self-end">
+					<button type="submit" name="submit" class="btn btn-primary">View Records</button>
+				</div>
+			</form>
 
-	<div class="sidenav">
-			<h2 style="font-family:Arial; color:white; text-align:center;"> Medical Store Management System </h2>
-			<p style="margin-top:-20px;color:white;line-height:1;font-size:12px;text-align:center">Developed by, Dharmendra Yadav!</p>
-			<a href="adminmainpage.php">Dashboard</a>
-			<button class="dropdown-btn">Inventory
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="inventory-add.php">Add New Medicine</a>
-				<a href="inventory-view.php">Manage Inventory</a>
-			</div>
-			<button class="dropdown-btn">Suppliers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="supplier-add.php">Add New Supplier</a>
-				<a href="supplier-view.php">Manage Suppliers</a>
-			</div>
-			<button class="dropdown-btn">Stock Purchase
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="purchase-add.php">Add New Purchase</a>
-				<a href="purchase-view.php">Manage Purchases</a>
-			</div>
-			<button class="dropdown-btn">Employees
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="employee-add.php">Add New Employee</a>
-				<a href="employee-view.php">Manage Employees</a>
-			</div>
-			<button class="dropdown-btn">Customers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="customer-add.php">Add New Customer</a>
-				<a href="customer-view.php">Manage Customers</a>
-			</div>
-			<a href="sales-view.php">View Sales Invoice Details</a>
-			<a href="salesitems-view.php">View Sold Products Details</a>
-			<a href="pos1.php">Add New Sale</a>
-			<button class="dropdown-btn">Reports
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="stockreport.php">Medicines - Low Stock</a>
-				<a href="expiryreport.php">Medicines - Soon to Expire</a>
-				<a href="salesreport.php">Transactions Reports</a>
-			</div>
-	</div>
+			<?php
+			if (isset($_POST['submit'])) {
+				$start = mysqli_real_escape_string($conn, $_POST['start']);
+				$end = mysqli_real_escape_string($conn, $_POST['end']);
 
-	<div class="topnav">
-		<a href="logout.php">Logout</a>
-	</div>
-	
-	<center>
-	<div class="head">
-	<h2> TRANSACTION REPORTS</h2>
-	</div>
-	
-	<br><br><br><br><br><br><br><br><br>
-	
-			<form action="<?=$_SERVER['PHP_SELF']?>" method="post">
-					<p>
-						<label for="start">Start Date:</label>
-						<input type="date" name="start">
-					</p>
-					<p>
-						<label for="end">End Date:</label>
-						<input type="date" name="end">
-					</p>
-				
-			<input type="submit" name="submit" value="View Records">
-			</form>	
-	
-	<?php
-	include "config.php";
-		if(isset($_POST['submit'])) {
-			
-			$start=$_POST['start'];
-			$end=$_POST['end'];
-			$res=mysqli_query($conn,"SELECT P_AMT('$start','$end') AS PAMT") or die(mysqli_error($conn));
-			while($row=mysqli_fetch_array($res))
-			{
-				$pamt=$row['PAMT'];
-				
+				// Purchase totals via DB function
+				$res = mysqli_query($conn, "SELECT P_AMT('$start','$end') AS PAMT");
+				$pamt = 0;
+				if ($res) {
+					while ($r = mysqli_fetch_array($res)) $pamt = $r['PAMT'];
+				}
+
+				// Sales totals via DB function
+				$res = mysqli_query($conn, "SELECT S_AMT('$start','$end') AS SAMT");
+				$samt = 0;
+				if ($res) {
+					while ($r = mysqli_fetch_array($res)) $samt = $r['SAMT'];
+				}
+
+				$profit = $samt - $pamt;
+				$profits = number_format($profit, 2);
+			?>
+
+			<div class="row">
+				<div class="col-lg-6 mb-4">
+					<div class="card">
+						<div class="card-header">Purchases (<?php echo htmlspecialchars($start) . ' to ' . htmlspecialchars($end); ?>)</div>
+						<div class="card-body p-0">
+							<div class="table-responsive">
+								<table class="table table-striped mb-0">
+									<thead class="table-light">
+										<tr>
+											<th>Purchase ID</th>
+											<th>Supplier ID</th>
+											<th>Medicine ID</th>
+											<th>Quantity</th>
+											<th>Date</th>
+											<th>Cost (Rs)</th>
+										</tr>
+									</thead>
+									<tbody>
+										<?php
+										$sql = "SELECT p_id,sup_id,med_id,p_qty,p_cost,pur_date FROM purchase WHERE pur_date >= '$start' AND pur_date <= '$end'";
+										$result = $conn->query($sql);
+										if ($result && $result->num_rows > 0) {
+											while ($row = $result->fetch_assoc()) {
+												echo '<tr>';
+												echo '<td>' . htmlspecialchars($row['p_id']) . '</td>';
+												echo '<td>' . htmlspecialchars($row['sup_id']) . '</td>';
+												echo '<td>' . htmlspecialchars($row['med_id']) . '</td>';
+												echo '<td>' . htmlspecialchars($row['p_qty']) . '</td>';
+												echo '<td>' . htmlspecialchars($row['pur_date']) . '</td>';
+												echo '<td>' . htmlspecialchars($row['p_cost']) . '</td>';
+												echo '</tr>';
+											}
+										} else {
+											echo '<tr><td colspan="6" class="text-center">No purchase records.</td></tr>';
+										}
+										?>
+										<tr>
+											<td colspan="5" class="text-end fw-bold">Total</td>
+											<td class="fw-bold">Rs.<?php echo htmlspecialchars($pamt); ?></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-6 mb-4">
+					<div class="card">
+						<div class="card-header">Sales (<?php echo htmlspecialchars($start) . ' to ' . htmlspecialchars($end); ?>)</div>
+						<div class="card-body p-0">
+							<div class="table-responsive">
+								<table class="table table-striped mb-0">
+									<thead class="table-light">
+										<tr>
+											<th>Sale ID</th>
+											<th>Customer ID</th>
+											<th>Employee ID</th>
+											<th>Date</th>
+											<th>Sale Amount (Rs)</th>
+										</tr>
+									</thead>
+									<tbody>
+										<?php
+										$sql = "SELECT sale_id, c_id, e_id, s_date, total_amt FROM sales WHERE s_date >= '$start' AND s_date <= '$end'";
+										$result = $conn->query($sql);
+										if ($result && $result->num_rows > 0) {
+											while ($row = $result->fetch_assoc()) {
+												echo '<tr>';
+												echo '<td>' . htmlspecialchars($row['sale_id']) . '</td>';
+												echo '<td>' . htmlspecialchars($row['c_id']) . '</td>';
+												echo '<td>' . htmlspecialchars($row['e_id']) . '</td>';
+												echo '<td>' . htmlspecialchars($row['s_date']) . '</td>';
+												echo '<td>' . htmlspecialchars($row['total_amt']) . '</td>';
+												echo '</tr>';
+											}
+										} else {
+											echo '<tr><td colspan="5" class="text-center">No sales records.</td></tr>';
+										}
+										?>
+										<tr>
+											<td colspan="4" class="text-end fw-bold">Total</td>
+											<td class="fw-bold">Rs.<?php echo htmlspecialchars($samt); ?></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-body">
+					<h5 class="card-title">Transaction Amount</h5>
+					<p class="card-text">Rs.<?php echo htmlspecialchars($profits); ?></p>
+				</div>
+			</div>
+
+			<?php
 			}
-			
-			$res=mysqli_query($conn,"SELECT S_AMT('$start','$end') AS SAMT;") or die(mysqli_error($conn));
-			while($row=mysqli_fetch_array($res))
-			{
-				$samt=$row['SAMT'];
-				
-			} 
-			
-			$profit = $samt - $pamt;
-			$profits = number_format($profit, 2);
-	?>
-			
-		<table align="right" id="table1" style="margin-right:100px;">
-			<tr>
-				<th>Purchase ID</th>
-				<th>Supplier ID</th>
-				<th>Medicine ID</th>
-				
-				<th>Quantity</th>
-				<th>Date of Purchase</th>
-				<th>Cost of Purchase(in Rs)</th>
-			</tr>
-	<?php
-	$sql = "SELECT p_id,sup_id,med_id,p_qty,p_cost,pur_date FROM purchase 
-			WHERE pur_date >= '$start' AND pur_date <= '$end';";
-	$result = $conn->query($sql);
-	if ($result->num_rows > 0) {
-	
-		while($row = $result->fetch_assoc()) {
-			
-		echo "<tr>";
-			echo "<td>" . $row["p_id"]. "</td>";
-			echo "<td>" . $row["sup_id"]. "</td>";
-			echo "<td>" . $row["med_id"]. "</td>";
-			echo "<td>" . $row["p_qty"]. "</td>";
-			echo "<td>" . $row["pur_date"]. "</td>";
-			echo "<td>" . $row["p_cost"]. "</td>";
-			
-		echo "</tr>";
-		}
-	}
-	
-	echo "<tr>";
-	echo "<td colspan=5>Total</td>";
-	echo"<td >Rs.".$pamt."</td>";
-	echo "</tr>";
-	echo "</table>";
-	echo "</table>";
-	?>	
-	
-	<table align="right" id="table1" style="margin-right:100px;">
-		<tr>
-			<th>Sale ID</th>
-			<th>Customer ID</th>
-			<th>Employee ID</th>
-			<th>Date</th>
-			<th>Sale Amount(in Rs)</th>
-		</tr>
-	
-	<?php
-	include "config.php";
-	$sql = "SELECT sale_id, c_id,s_date,s_time,total_amt,e_id FROM sales
-			WHERE s_date >= '$start' AND s_date <= '$end';";
-	$result = $conn->query($sql);
-	if ($result->num_rows > 0) {
-	
-		while($row = $result->fetch_assoc()) {
-			
-			
-		echo "<tr>";
-			echo "<td>" . $row["sale_id"]. "</td>";
-			echo "<td>" . $row["c_id"] . "</td>";
-			echo "<td>" . $row["e_id"]. "</td>";
-			echo "<td>" . $row["s_date"]."</td>";
-			echo "<td>" . $row["total_amt"]. "</td>";
-			
-		echo "</tr>";
-		}
-	echo "<tr>";
-	echo "<td colspan=4>Total</td>";
-	echo"<td >Rs.".$samt."</td>";
-	echo "</tr>";
-	echo "</table>";
-	}
-	?>
-	
-	<table align="right" id="table1" style="margin-bottom:100px;margin-right:100px;">
-	<tr style="background-color: #f2f2f2;" >
-		<td>Transaction Amount </td>
-				<td>Rs.<?php echo $profits; }?></td>
-	</tr>
-	</table>
-					
-</body>
+			$conn->close();
+			?>
+		</div>
 
-<script>
-		var dropdown = document.getElementsByClassName("dropdown-btn");
-		var i;
-
-			for (i = 0; i < dropdown.length; i++) {
-			  dropdown[i].addEventListener("click", function() {
-			  this.classList.toggle("active");
-			  var dropdownContent = this.nextElementSibling;
-			  if (dropdownContent.style.display === "block") {
-			  dropdownContent.style.display = "none";
-			  } else {
-			  dropdownContent.style.display = "block";
-			  }
-			  });
-			}
-</script>
-
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
 </html>

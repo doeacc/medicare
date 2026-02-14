@@ -2,8 +2,9 @@
 <html>
 
 <head>
-<link rel="stylesheet" type="text/css" href="nav2.css">
-<link rel="stylesheet" type="text/css" href="form4.css">
+
+	<!-- Bootstrap 5 -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ENjdO4Dr2bkBIFxQpeoYz1H6kQb1QZ1Zr+3l6Z6Y5nI1wGmZ4x0Q5tzt+2QvQ4Q" crossorigin="anonymous">
 <title>
 Customers
 </title>
@@ -11,144 +12,106 @@ Customers
 
 <body>
 
-		<div class="sidenav">
-			<h2 style="font-family:Arial; color:white; text-align:center;"> Medical Store Management System </h2>
-			<p style="margin-top:-20px;color:white;line-height:1;font-size:12px;text-align:center">Developed by, Dharmendra Yadav!</p>
-			<a href="adminmainpage.php">Dashboard</a>
-			<button class="dropdown-btn">Inventory
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="inventory-add.php">Add New Medicine</a>
-				<a href="inventory-view.php">Manage Inventory</a>
-			</div>
-			<button class="dropdown-btn">Suppliers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="supplier-add.php">Add New Supplier</a>
-				<a href="supplier-view.php">Manage Suppliers</a>
-			</div>
-			<button class="dropdown-btn">Stock Purchase
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="purchase-add.php">Add New Purchase</a>
-				<a href="purchase-view.php">Manage Purchases</a>
-			</div>		
-			<button class="dropdown-btn">Employees
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="employee-add.php">Add New Employee</a>
-				<a href="employee-view.php">Manage Employees</a>
-			</div>			
-			<button class="dropdown-btn">Customers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="customer-add.php">Add New Customer</a>
-				<a href="customer-view.php">Manage Customers</a>
-			</div>
-			<a href="sales-view.php">View Sales Invoice Details</a>
-			<a href="salesitems-view.php">View Sold Products Details</a>
-			<a href="pos1.php">Add New Sale</a>		
-			<button class="dropdown-btn">Reports
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="stockreport.php">Medicines - Low Stock</a>
-				<a href="expiryreport.php">Medicines - Soon to Expire</a>
-				<a href="salesreport.php">Transactions Reports</a>				
-			</div>			
-	</div>
-
-	<div class="topnav">
-		<a href="logout.php">Logout</a>
-	</div>
-	
-	<center>
-	<div class="head">
-	<h2> UPDATE CUSTOMER DETAILS</h2>
-	</div>
-	</center>
 
 
-	<div class="one">
-		<div class="row">
-		
-	<?php
-		
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="#">Medical Store</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+						<li class="nav-item"><a class="nav-link" href="adminmainpage.php">Dashboard</a></li>
+						<li class="nav-item"><a class="nav-link" href="customer-view.php">Customers</a></li>
+					</ul>
+					<div class="d-flex">
+						<a class="btn btn-outline-secondary" href="logout.php">Logout</a>
+					</div>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container mt-4">
+			<div class="row justify-content-center">
+				<div class="col-12 col-md-8 col-lg-6">
+					<div class="card shadow-sm">
+						<div class="card-body">
+							<h3 class="card-title text-center mb-3">Update Customer</h3>
+
+		<?php
 		include "config.php";
-		
-		if(isset($_GET['id']))
-		{
-			$id=$_GET['id'];
-			$qry1="SELECT * FROM customer WHERE c_id='$id'";
+
+		$message = '';
+		if (isset($_POST['update'])) {
+			$id = mysqli_real_escape_string($conn, $_POST['cid']);
+			$fname = mysqli_real_escape_string($conn, $_POST['cfname']);
+			$lname = mysqli_real_escape_string($conn, $_POST['clname']);
+			$age = mysqli_real_escape_string($conn, $_POST['age']);
+			$sex = mysqli_real_escape_string($conn, $_POST['sex']);
+			$phno = mysqli_real_escape_string($conn, $_POST['phno']);
+			$mail = mysqli_real_escape_string($conn, $_POST['emid']);
+
+			$sql = "UPDATE customer SET c_fname='$fname',c_lname='$lname',c_age='$age',c_sex='$sex',c_phno='$phno',c_mail='$mail' WHERE c_id='$id'";
+			if ($conn->query($sql)) {
+				header("Location: customer-view.php");
+				exit;
+			} else {
+				$message = '<div class="alert alert-danger">Error! Unable to update.</div>';
+			}
+		}
+
+		$row = [];
+		if (isset($_GET['id'])) {
+			$id = mysqli_real_escape_string($conn, $_GET['id']);
+			$qry1 = "SELECT * FROM customer WHERE c_id='$id'";
 			$result = $conn->query($qry1);
-			$row = $result -> fetch_row();
+			if ($result) $row = $result->fetch_row();
 		}
+		?>
 
-		if( isset($_POST['update']))
-		 {
-			$id = $_POST['cid'];
-			$fname = $_POST['cfname'];
-			$lname = $_POST['clname'];
-			$age = $_POST['age'];
-			$sex = $_POST['sex'];
-			$phno = $_POST['phno'];
-			$mail = $_POST['emid'];
-			 
-		$sql="UPDATE customer SET c_fname='$fname',c_lname='$lname',c_age='$age',c_sex='$sex',c_phno='$phno',c_mail='$mail' where c_id='$id'";
-		if ($conn->query($sql))
-		header("location:customer-view.php");
-		else
-		echo "<p style='font-size:8; color:red;'>Error! Unable to update.</p>";
-		}
+							<?php echo $message; ?>
+							<form action="<?=$_SERVER['PHP_SELF']?>" method="post">
+								<div class="row g-3">
+									<div class="col-12">
+										<label for="cid" class="form-label">Customer ID</label>
+										<input type="number" class="form-control" name="cid" value="<?php echo $row[0]; ?>" readonly>
+									</div>
+									<div class="col-12 col-md-6">
+										<label for="cfname" class="form-label">First Name</label>
+										<input type="text" class="form-control" name="cfname" value="<?php echo $row[1]; ?>">
+									</div>
+									<div class="col-12 col-md-6">
+										<label for="clname" class="form-label">Last Name</label>
+										<input type="text" class="form-control" name="clname" value="<?php echo $row[2]; ?>">
+									</div>
+									<div class="col-12 col-md-4">
+										<label for="age" class="form-label">Age</label>
+										<input type="number" class="form-control" name="age" value="<?php echo $row[3]; ?>">
+									</div>
+									<div class="col-12 col-md-4">
+										<label for="sex" class="form-label">Sex</label>
+										<input type="text" class="form-control" name="sex" value="<?php echo $row[4]; ?>">
+									</div>
+									<div class="col-12 col-md-4">
+										<label for="phno" class="form-label">Phone Number</label>
+										<input type="number" class="form-control" name="phno" value="<?php echo $row[5]; ?>">
+									</div>
+									<div class="col-12">
+										<label for="emid" class="form-label">Email ID</label>
+										<input type="email" class="form-control" name="emid" value="<?php echo $row[6]; ?>">
+									</div>
+									<div class="col-12 text-center mt-3">
+										<button type="submit" name="update" class="btn btn-primary">Update</button>
+									</div>
+								</div>
+							</form>
 
-	?>
-			<form action="<?=$_SERVER['PHP_SELF']?>" method="post">
-				<div class="column">
-					<p>
-						<label for="cid">Customer ID:</label><br>
-						<input type="number" name="cid" value="<?php echo $row[0]; ?>" readonly>
-					</p>
-					<p>
-						<label for="cfname">First Name:</label><br>
-						<input type="text" name="cfname" value="<?php echo $row[1]; ?>">
-					</p>
-					<p>
-						<label for="clname">Last Name:</label><br>
-						<input type="text" name="clname" value="<?php echo $row[2]; ?>">
-					</p>
-					<p>
-						<label for="age">Age:</label><br>
-						<input type="number" name="age" value="<?php echo $row[3]; ?>">
-					</p>
-					
-					<p>
-						<label for="sex">Sex: </label><br>
-						<input type="text" name="sex" value="<?php echo $row[4]; ?>">
-					</p>
-					
+						</div>
+					</div>
 				</div>
-				<div class="column">
-					
-					<p>
-						<label for="phno">Phone Number: </label><br>
-						<input type="number" name="phno" value="<?php echo $row[5]; ?>">
-					</p>
-					<p>
-						<label for="emid">Email ID:</label><br>
-						<input type="text" name="emid" value="<?php echo $row[6]; ?>">
-					</p>
-				</div>
-			
-			<input type="submit" name="update" value="Update">
-			
-			</form>
+			</div>
 		</div>
-	</div>
 	
 </body>	
 

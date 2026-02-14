@@ -1,0 +1,20 @@
+/.vscode/
+/.idea/
+/node_modules/
+/vendor/
+/.DS_Store
+*.log
+.env
+composer.lock
+npm-debug.log
+/.vagrant/
+/.cache/
+/.phpunit.result.cache
+/.sass-cache/
+Thumbs.db
+# Build outputs
+/dist/
+
+# OS files
+ehthumbs.db
+Desktop.ini

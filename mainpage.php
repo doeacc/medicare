@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 
-<link rel="stylesheet" type="text/css" href="login1.css">
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ENjdO4Dr2bkBIFxQpeoYz1H6kQb1QZ1Zr+3l6Z6Y5nI1wGmZ4x0Q5tzt+2QvQ4Q" crossorigin="anonymous">
 <head>
 <div class="header">
   <h1>Medical Store Management System</h1>
@@ -22,16 +23,15 @@ Medical Store Management System
 				<h1>Admin Login</h1>
 				<center>
 				<div>
-					<input type="text" class="textbox" id="uname" name="uname" placeholder="Username" />
+					<input type="text" class="form-control" id="uname" name="uname" placeholder="Username" />
 				</div>
-				<div>
-					<input type="password" class="textbox" id="pwd" name="pwd" placeholder="Password"/>
+				<div class="mt-2">
+					<input type="password" class="form-control" id="pwd" name="pwd" placeholder="Password"/>
 				</div>
-				<div>
-				
-				<input type="submit" value="Submit" name="submit" id="submit" />
-				<input type="submit" value="Click here for Pharmacist Login" name="psubmit" id="submit" />
-				
+				<div class="mt-3">
+
+				<input type="submit" value="Submit" name="submit" id="submit" class="btn btn-primary" />
+				<input type="submit" value="Click here for Pharmacist Login" name="psubmit" id="submit" class="btn btn-secondary ms-2" />
 	<?php
 				
 		include "config.php";

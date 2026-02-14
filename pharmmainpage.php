@@ -1,86 +1,60 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-<link rel="stylesheet" type="text/css" href="table1.css">
-<link rel="stylesheet" type="text/css" href="nav2.css">
-<title>
-Pharmacist Dashboard
-</title>
-</head>
-<style>
-body {font-family:Arial;}
-</style>
-
-<body>
-
-	<div class="sidenav">
-			<h2 style="font-family:Arial; color:white; text-align:center;"> Medical Store Management System </h2>
-			<p style="margin-top:-20px;color:white;line-height:1;font-size:12px;text-align:center">Developed by, Dharmendra Yadav!</p>
-			<a href="pharmmainpage.php">Dashboard</a>
-			
-			<a href="pharm-inventory.php">View Inventory</a>
-			<a href="pharm-pos1.php">Add New Sale</a>
-			<button class="dropdown-btn">Customers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="pharm-customer.php">Add New Customer</a>
-				<a href="pharm-customer-view.php">View Customers</a>
+<?php
+include "config.php";
+session_start();
+$ename = '';
+if (isset($_SESSION['user'])) {
+		$sql = "SELECT E_FNAME FROM EMPLOYEE WHERE E_ID='" . mysqli_real_escape_string($conn, $_SESSION['user']) . "'";
+		$result = $conn->query($sql);
+		if ($result) {
+				$row = $result->fetch_row();
+				$ename = $row[0] ?? '';
+		}
+}
+?>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Pharmacist Dashboard</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="pharmmainpage.php">Pharmacist</a>
+				<div class="d-flex">
+					<a class="btn btn-outline-light" href="logout1.php">Logout<?php if($ename) echo ' (signed in as '.htmlspecialchars($ename).')'; ?></a>
+				</div>
 			</div>
-	</div>
-	
-	<?php
-	
-	include "config.php";
-	session_start();
-	
-	$sql="SELECT E_FNAME from EMPLOYEE WHERE E_ID='$_SESSION[user]'";
-	$result=$conn->query($sql);
-	$row=$result->fetch_row();
-	
-	$ename=$row[0];
-		
-	?>
+		</nav>
 
-	<div class="topnav">
-		<a href="logout1.php">Logout(signed in as <?php echo $ename; ?>)</a>
-	</div>
-	
-	<center>
-	<div class="head">
-	<h2> PHARMACIST DASHBOARD </h2>
-	</div>
-	</center>
-	
-	<a href="pharm-pos1.php" title="Add New Sale">
-	<img src="carticon1.png" style="padding:8px;margin-left:550px;margin-top:40px;width:200px;height:200px;border:2px solid black;" alt="Add New Sale">
-	</a>
-	
-	<a href="pharm-inventory.php" title="View Inventory">
-	<img src="inventory.png" style="padding:8px;margin-left:100px;margin-top:40px;width:200px;height:200px;border:2px solid black;" alt="Inventory">
-	</a>
-	
-</body>
+		<div class="container py-4 text-center">
+			<h2 class="mb-4">Pharmacist Dashboard</h2>
+			<div class="row justify-content-center g-4">
+				<div class="col-12 col-md-4">
+					<a href="pharm-pos1.php" class="text-decoration-none">
+						<div class="card">
+							<img src="carticon1.png" class="card-img-top" style="height:200px;object-fit:contain" alt="Add New Sale">
+							<div class="card-body">
+								<h5 class="card-title">Add New Sale</h5>
+							</div>
+						</div>
+					</a>
+				</div>
+				<div class="col-12 col-md-4">
+					<a href="pharm-inventory.php" class="text-decoration-none">
+						<div class="card">
+							<img src="inventory.png" class="card-img-top" style="height:200px;object-fit:contain" alt="Inventory">
+							<div class="card-body">
+								<h5 class="card-title">View Inventory</h5>
+							</div>
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
 
-<script>
-
-	var dropdown = document.getElementsByClassName("dropdown-btn");
-	var i;
-
-		for (i = 0; i < dropdown.length; i++) {
-		  dropdown[i].addEventListener("click", function() {
-		  this.classList.toggle("active");
-		  var dropdownContent = this.nextElementSibling;
-		  if (dropdownContent.style.display === "block") {
-		  dropdownContent.style.display = "none";
-		  } 
-		  else {
-		  dropdownContent.style.display = "block";
-		  }
-		});
-	}
-	
-</script>
-
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
 </html>

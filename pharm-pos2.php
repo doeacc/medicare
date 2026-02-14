@@ -1,166 +1,125 @@
-<!DOCTYPE html>
-<html>
+<?php
+include "config.php";
+session_start();
 
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="nav2.css">
-<link rel="stylesheet" type="text/css" href="form3.css">
-<link rel="stylesheet" type="text/css" href="table2.css">
-<title>
-New Sales
-</title>
-</head>
+$alert = '';
+$total = null;
 
-<body>
+$ename = '';
+if (isset($_SESSION['user'])) {
+		$rs = $conn->query("SELECT E_FNAME FROM EMPLOYEE WHERE E_ID='" . mysqli_real_escape_string($conn, $_SESSION['user']) . "'");
+		if ($rs) { $r = $rs->fetch_row(); $ename = $r[0] ?? ''; }
+}
 
-		<div class="sidenav">
-			<h2 style="font-family:Arial; color:white; text-align:center;"> Medical Store Management System </h2>
-			<p style="margin-top:-20px;color:white;line-height:1;font-size:12px;text-align:center">Developed by, Dharmendra Yadav!</p>
-			<a href="pharmmainpage.php">Dashboard</a>
-			
-			<a href="pharm-inventory.php">View Inventory</a>
-			<a href="pharm-pos1.php">Add New Sale</a>
-			<button class="dropdown-btn">Customers
-			<i class="down"></i>
-			</button>
-			<div class="dropdown-container">
-				<a href="pharm-customer.php">Add New Customer</a>
-				<a href="pharm-customer-view.php">View Customers</a>
+// Determine sale id
+$sid = null;
+if (isset($_GET['sid'])) $sid = intval($_GET['sid']);
+if (!$sid) {
+		$res = $conn->query("SHOW TABLE STATUS LIKE 'sales'");
+		if ($res) {
+				$row = $res->fetch_assoc();
+				$sid = max(0, intval($row['Auto_increment']) - 1);
+		}
+}
+
+// Handle completion (calculate total via stored proc)
+if (isset($_POST['custadd']) && $sid) {
+		$conn->query("SET @p0=" . intval($sid));
+		$conn->query("CALL TOTAL_AMT(@p0,@p1)");
+		$res = $conn->query("SELECT @p1 as TOTAL");
+		if ($res) {
+				$r = $res->fetch_assoc();
+				$total = $r['TOTAL'] ?? null;
+				$alert = '<div class="alert alert-success">Order total: ' . htmlspecialchars($total) . '</div>';
+		} else {
+				$alert = '<div class="alert alert-danger">Error calculating total.</div>';
+		}
+}
+
+// Fetch sale items
+$items = [];
+if ($sid) {
+		$res = $conn->query("SELECT med_id,sale_qty,tot_price FROM sales_items WHERE sale_id=" . intval($sid));
+		if ($res) {
+				while ($r = $res->fetch_assoc()) {
+						$mid = intval($r['med_id']);
+						$mres = $conn->query("SELECT med_name, med_price FROM meds WHERE med_id=" . $mid);
+						$mrow = $mres ? $mres->fetch_assoc() : null;
+						$items[] = [
+								'med_id' => $mid,
+								'med_name' => $mrow['med_name'] ?? '',
+								'med_price' => $mrow['med_price'] ?? '',
+								'sale_qty' => $r['sale_qty'],
+								'tot_price' => $r['tot_price']
+						];
+				}
+		}
+}
+
+?>
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Sales Invoice (Pharmacist)</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="pharmmainpage.php">Pharmacist</a>
+				<div class="d-flex">
+					<a class="btn btn-outline-light" href="logout1.php">Logout<?php if($ename) echo ' ('.htmlspecialchars($ename).')'; ?></a>
+				</div>
 			</div>
-	</div>
+		</nav>
 
-	<?php
-	
-		include "config.php";
-		session_start();
+		<div class="container py-4">
+			<h2 class="mb-3">Sales Invoice</h2>
+			<?php echo $alert; ?>
 
-		$sql="SELECT E_FNAME from EMPLOYEE WHERE E_ID='$_SESSION[user]'";
-		$result=$conn->query($sql);
-		$row=$result->fetch_row();
-		
-		$ename=$row[0];
-	
-	?>
+			<div class="table-responsive">
+				<table class="table table-bordered table-striped">
+					<thead class="table-dark">
+						<tr>
+							<th>Medicine ID</th>
+							<th>Medicine Name</th>
+							<th>Quantity</th>
+							<th>Price</th>
+							<th>Total Price</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php if (count($items) === 0): ?>
+							<tr><td colspan="6" class="text-center">No items in this sale.</td></tr>
+						<?php else: ?>
+							<?php foreach ($items as $it): ?>
+								<tr>
+									<td><?php echo htmlspecialchars($it['med_id']); ?></td>
+									<td><?php echo htmlspecialchars($it['med_name']); ?></td>
+									<td><?php echo htmlspecialchars($it['sale_qty']); ?></td>
+									<td><?php echo htmlspecialchars($it['med_price']); ?></td>
+									<td><?php echo htmlspecialchars($it['tot_price']); ?></td>
+									<td><a class="btn btn-sm btn-danger" href="pharm-pos-delete.php?mid=<?php echo urlencode($it['med_id']); ?>&slid=<?php echo urlencode($sid); ?>">Delete</a></td>
+								</tr>
+							<?php endforeach; ?>
+						<?php endif; ?>
+					</tbody>
+				</table>
+			</div>
 
-	<div class="topnav">
-		<a href="logout1.php">Logout(signed in as <?php echo $ename; ?>)</a>
-	</div>
-	
-	<center>
-	<div class="head">
-	<h2> SALES INVOICE</h2>
-	</div>
-	</center>
+			<div class="d-flex gap-2 mt-3">
+				<a class="btn btn-secondary" href="pharm-pos1.php?sid=<?php echo urlencode($sid); ?>">Go Back to Sales Page</a>
+				<form method="post" class="m-0">
+					<button type="submit" name="custadd" class="btn btn-primary">Complete Order</button>
+				</form>
+			</div>
 
-	<table align='right' id='table1'>
-		<tr>
-			<th>Medicine ID</th>
-			<th>Medicine Name</th>
-			<th>Quantity</th>
-			<th>Price</th>
-			<th>Total Price</th>
-			<th>Action</th>
-		</tr>
-	
-	<?php
-	
-		if(isset($_GET['sid'])) {
-		$sid=$_GET['sid'];}
-		
-		if(empty($sid))
-		{
-			$sql ="SHOW TABLE STATUS LIKE 'sales'";
-
-			if(!$result = $conn->query($sql)){
-			die('There was an error running the query [' . $conn->error . ']');
-				}
-
-			$row = $result->fetch_assoc();
-			$sid=$row['Auto_increment']-1;
-		}
-	
-		if(!empty($sid)) {
-		$qry1 = "SELECT med_id,sale_qty,tot_price FROM sales_items where sale_id=$sid";
-		$result1 = $conn->query($qry1);
-		$sum=0;
-
-			if ($result1->num_rows > 0) {
-	
-			while($row1 = $result1->fetch_assoc()) {
-		
-					$medid=$row1["med_id"];
-					$qry2 = "SELECT med_name,med_price FROM meds where med_id=$medid";
-					$result2 = $conn->query($qry2);
-					$row2=$result2->fetch_row();
-					
-				echo "<tr>";
-					echo "<td>" . $row1["med_id"]. "</td>";
-					echo "<td>" . $row2[0] . "</td>";
-					echo "<td>" . $row1["sale_qty"]. "</td>";
-					echo "<td>" . $row2[1] . "</td>";
-					echo "<td>" . $row1["tot_price"]. "</td>";
-					echo "<td align=center>";
-					echo "<a name='delete' class='button1 del-btn' href=pharm-pos-delete.php?mid=".$row1['med_id']."&slid=".$sid.">Delete</a>";	
-					echo "</td>";
-				echo "</tr>";
-				}
-			echo "</table>";
-			}	
-		}
-		
-	?>
-		
-		<div class="one" style="background-color:white;">
-		<form method=post>
-		<a name='pos1' class='button1 view-btn' href=pharm-pos1.php?sid=".$sid.">Go Back to Sales Page</a> 
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type='submit' name='custadd' value='Complete Order'><br>
-		</form>
 		</div>
-		
-	<?php
-		
-		if(isset($_POST['custadd'])) {
-			
-			$res=mysqli_query($conn,"SET @p0=$sid;");
-			$res=mysqli_query($conn,"CALL `TOTAL_AMT`(@p0,@p1);") or die(mysqli_error($conn));
-			$res=mysqli_query($conn,"SELECT @p1 as TOTAL;");
-			
-			while($row=mysqli_fetch_array($res))
-			{
-				$tot=$row['TOTAL'];
-			}
-					
-			echo "<table align='right' id='table1'>
-				<tr style='background-color: #f2f2f2;'>
-				<td>Total</td>
-				<td>";echo $tot;
-				echo "</td>
-				</tr>
-			</table>";	
-		}
-					
-	?>
-	
-</body>
 
-<script>
-	
-		var dropdown = document.getElementsByClassName("dropdown-btn");
-		var i;
-
-			for (i = 0; i < dropdown.length; i++) {
-			  dropdown[i].addEventListener("click", function() {
-			  this.classList.toggle("active");
-			  var dropdownContent = this.nextElementSibling;
-			  if (dropdownContent.style.display === "block") {
-			  dropdownContent.style.display = "none";
-			  } else {
-			  dropdownContent.style.display = "block";
-			  }
-			  });
-			}
-			
-</script>
-	
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
 </html>

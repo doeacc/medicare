@@ -25,7 +25,7 @@
 					</div>
 				</div>
 			</div>
-		</nav>
+		<?php include 'header.php'; ?>
 
 		<div class="container mt-4">
 			<div class="d-flex justify-content-between align-items-center mb-3">
@@ -46,26 +46,12 @@
 							<th>Action</th>
 						</tr>
 					</thead>
-					<tbody>
-		<?php
 
-		include "config.php";
-		$sql = "SELECT c_id,c_fname,c_lname,c_age,c_sex,c_phno,c_mail FROM customer";
-		$result = $conn->query($sql);
-		if ($result->num_rows > 0) {
+					</body>
 
-				while($row = $result->fetch_assoc()) {
+					<?php include 'footer.php'; ?>
 
-				echo "<tr>";
-						echo "<td>" . $row["c_id"]. "</td>";
-						echo "<td>" . $row["c_fname"] . "</td>";
-						echo "<td>" . $row["c_lname"]. "</td>";
-						echo "<td>" . $row["c_age"]. "</td>";
-						echo "<td>" . $row["c_sex"]. "</td>";
-						echo "<td>" . $row["c_phno"]. "</td>";
-						echo "<td>" . $row["c_mail"]. "</td>";
-						echo "<td class='text-center'>";
-								echo "<a class='btn btn-sm btn-primary me-2' href=customer-update.php?id=".$row['c_id'].">Edit</a>";
+					</html>
 								echo "<a class='btn btn-sm btn-danger' href=customer-delete.php?id=".$row['c_id'].">Delete</a>";
 						echo "</td>";
 				echo "</tr>";

@@ -30,10 +30,12 @@ if (isset($_POST['add'])) {
 <title>Medicines</title>
 </head>
 
-<body>
 
+</body>
 
+<?php include 'footer.php'; ?>
 
+</html>
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<div class="container-fluid">
 			<a class="navbar-brand" href="#">Medical Store</a>
@@ -50,7 +52,7 @@ if (isset($_POST['add'])) {
 				</div>
 			</div>
 		</div>
-	</nav>
+	<?php include 'header.php'; ?>
 
 	<div class="container mt-5">
 		<?php echo $message; ?>

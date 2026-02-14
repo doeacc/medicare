@@ -1,23 +1,9 @@
-<?php
 
-	include "config.php";
-	<?php
-	include "config.php";
-	session_start();
+</body>
 
-	$ename = '';
-	if (isset($_SESSION['user'])) {
-			$sql = "SELECT E_FNAME FROM EMPLOYEE WHERE E_ID='" . mysqli_real_escape_string($conn, $_SESSION['user']) . "'";
-			$res = $conn->query($sql);
-			if ($res) {
-					$r = $res->fetch_row();
-					$ename = $r[0] ?? '';
-			}
-	}
+<?php include 'footer.php'; ?>
 
-	// Fetch inventory
-	$items = [];
-	$sql = "SELECT * FROM INVENTORY";
+</html>
 	$res = $conn->query($sql);
 	if ($res) {
 			while ($row = $res->fetch_assoc()) {

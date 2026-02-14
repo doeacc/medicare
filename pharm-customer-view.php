@@ -1,23 +1,9 @@
-<?php
-include "config.php";
-session_start();
 
-$search_result = null;
-$search = '';
-if (isset($_POST['search'])) {
-	$search = mysqli_real_escape_string($conn, $_POST['valuetosearch'] ?? '');
-	$query = "SELECT c_id, c_fname, c_lname, c_phno FROM customer WHERE CONCAT(c_id, c_fname, c_lname, c_phno) LIKE '%" . $search . "%'";
-	$search_result = $conn->query($query);
+</body>
 
-	</div>
-	
-	<center>
-	
-	<div class="head">
-	<h2>  CUSTOMER LIST</h2>
-	</div>
-	
-	<form method="post">
+<?php include 'footer.php'; ?>
+
+</html>
 	<input type="text" name="valuetosearch" placeholder="Enter any value to Search" style="width:400px; margin-left:250px;">&nbsp;&nbsp;&nbsp;
 	<input type="submit" name="search" value="Search">
 	<br><br>
@@ -83,7 +69,7 @@ if (isset($_POST['search'])) {
 								<a class="btn btn-outline-light" href="logout1.php">Logout<?php if($ename) echo ' ('.htmlspecialchars($ename).')'; ?></a>
 							</div>
 						</div>
-					</nav>
+					<?php include 'header.php'; ?>
 
 					<div class="container py-4">
 						<h2 class="mb-3">Customer List</h2>

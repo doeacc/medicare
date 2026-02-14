@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 
 	<!-- Bootstrap 5 -->
@@ -21,6 +20,12 @@ Customers
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+</body>
+
+<?php include 'footer.php'; ?>
+
+</html>
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 						<li class="nav-item"><a class="nav-link" href="adminmainpage.php">Dashboard</a></li>
 						<li class="nav-item"><a class="nav-link" href="customer-view.php">Customers</a></li>

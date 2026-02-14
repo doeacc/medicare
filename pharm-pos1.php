@@ -189,7 +189,7 @@
 										<a class="btn btn-outline-light" href="logout1.php">Logout<?php if($ename) echo ' ('.htmlspecialchars($ename).')'; ?></a>
 									</div>
 								</div>
-							</nav>
+					    	<?php include 'header.php'; ?>
 
 							<div class="container py-4">
 								<h2 class="mb-3">Point of Sale</h2>

@@ -41,7 +41,7 @@
 					</div>
 				</div>
 			</div>
-		</nav>
+		<?php include 'header.php'; ?>
 
 		<div class="container mt-5">
 			<div class="row justify-content-center">
@@ -50,26 +50,12 @@
 						<div class="card-body">
 							<h3 class="card-title text-center mb-4">Add Employee</h3>
 
-							<?php
-								include "config.php";
 
-								if(isset($_POST['add']))
-								{
-								$id = mysqli_real_escape_string($conn, $_REQUEST['eid']);
-								$fname = mysqli_real_escape_string($conn, $_REQUEST['efname']);
-								$lname = mysqli_real_escape_string($conn, $_REQUEST['elname']);
-								$bdate = mysqli_real_escape_string($conn, $_REQUEST['ebdate']);
-								$age = mysqli_real_escape_string($conn, $_REQUEST['eage']);
-								$sex = mysqli_real_escape_string($conn, $_REQUEST['esex']);
-								$etype = mysqli_real_escape_string($conn, $_REQUEST['etype']);
-								$jdate = mysqli_real_escape_string($conn, $_REQUEST['ejdate']);
-								$sal = mysqli_real_escape_string($conn, $_REQUEST['esal']);
-								$phno = mysqli_real_escape_string($conn, $_REQUEST['ephno']);
-								$mail = mysqli_real_escape_string($conn, $_REQUEST['e_mail']);
-								$add = mysqli_real_escape_string($conn, $_REQUEST['eadd']);
+							</body>
 
-								$sql = "INSERT INTO employee VALUES ($id, '$fname','$lname','$bdate',$age,'$sex','$etype','$jdate','$sal',$phno, '$mail','$add')";
-								if(mysqli_query($conn, $sql)){
+							<?php include 'footer.php'; ?>
+
+							</html>
 										echo "<p style='font-size:8;'>Employee successfully added!</p>";
 								} else{
 										echo "<p style='font-size:8; color:red;'>Error! Check details.</p>";

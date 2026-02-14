@@ -7,35 +7,12 @@
 		$qry1="SELECT * FROM meds WHERE med_id='$id'";
 		$result = $conn->query($qry1);
 		$row = $result -> fetch_row();
-	}
-?>
 
-<!DOCTYPE html>
-<html>
+	</body>
 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<!-- Bootstrap 5 -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ENjdO4Dr2bkBIFxQpeoYz1H6kQb1QZ1Zr+3l6Z6Y5nI1wGmZ4x0Q5tzt+2QvQ4Q" crossorigin="anonymous">
-<title>
-Medicines
-</title>
-</head>
+	<?php include 'footer.php'; ?>
 
-<body>
-
-
-
-		<nav class="navbar navbar-expand-lg navbar-light bg-light">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="#">Medical Store</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-						<li class="nav-item"><a class="nav-link" href="adminmainpage.php">Dashboard</a></li>
+	</html>
 						<li class="nav-item"><a class="nav-link" href="inventory-view.php">Inventory</a></li>
 					</ul>
 					<div class="d-flex">
@@ -43,7 +20,7 @@ Medicines
 					</div>
 				</div>
 			</div>
-		</nav>
+		<?php include 'header.php'; ?>
 
 		<div class="container mt-4">
 			<div class="row justify-content-center">

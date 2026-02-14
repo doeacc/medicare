@@ -1,23 +1,9 @@
-<?php
-		include "config.php";
 
-		$message = '';
-		if (isset($_POST['update'])) {
-			$id = mysqli_real_escape_string($conn, $_REQUEST['eid']);
-			$fname = mysqli_real_escape_string($conn, $_REQUEST['efname']);
-			$lname = mysqli_real_escape_string($conn, $_REQUEST['elname']);
-			$bdate = mysqli_real_escape_string($conn, $_REQUEST['ebdate']);
-			$age = mysqli_real_escape_string($conn, $_REQUEST['eage']);
-			$sex = mysqli_real_escape_string($conn, $_REQUEST['esex']);
-			$etype = mysqli_real_escape_string($conn, $_REQUEST['etype']);
-			$jdate = mysqli_real_escape_string($conn, $_REQUEST['ejdate']);
-			$sal = mysqli_real_escape_string($conn, $_REQUEST['esal']);
-			$phno = mysqli_real_escape_string($conn, $_REQUEST['ephno']);
-			$mail = mysqli_real_escape_string($conn, $_REQUEST['e_mail']);
-			$add = mysqli_real_escape_string($conn, $_REQUEST['eadd']);
+</body>
 
-			$sql = "UPDATE employee
-					SET e_fname='$fname',e_lname='$lname',bdate='$bdate',e_age='$age',e_sex='$sex',
+<?php include 'footer.php'; ?>
+
+</html>
 					e_type='$etype',e_jdate='$jdate',e_sal='$sal',e_phno='$phno',e_mail='$mail',e_add='$add' WHERE e_id='$id'";
 
 			if ($conn->query($sql)) {

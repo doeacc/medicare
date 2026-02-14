@@ -30,7 +30,7 @@
 			</div>
 		</div>
 	</div>
-</nav>
+	<?php include 'header.php'; ?>
 
 <div class="container py-4">
 	<h2 class="mb-4 text-center">Admin Dashboard</h2>
@@ -61,23 +61,9 @@
 	
 </body>
 
-<script>
-	var dropdown = document.getElementsByClassName("dropdown-btn");
-	var i;
 
-	for (i = 0; i < dropdown.length; i++) {
-	  dropdown[i].addEventListener("click", function() {
-	  this.classList.toggle("active");
-	  var dropdownContent = this.nextElementSibling;
-	  if (dropdownContent.style.display === "block") {
-	  dropdownContent.style.display = "none";
-	  } else {
-	  dropdownContent.style.display = "block";
-	  }
-	  });
-	}
-</script>
+</body>
 
-
+<?php include 'footer.php'; ?>
 
 </html>
